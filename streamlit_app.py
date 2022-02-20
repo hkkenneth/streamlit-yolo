@@ -28,7 +28,7 @@ if not os.path.exists('yolov4_anchors.txt'):
   urllib.request.urlretrieve('https://github.com/onnx/models/raw/main/vision/object_detection_segmentation/yolov4/dependencies/yolov4_anchors.txt?raw=true', filename="yolov4_anchors.txt")
   st.write('yolov4_anchors.txt downloaded')
 
-sess = 
+sess = None
 if os.path.exists('yolov4.onnx'):
   # Start from ORT 1.10, ORT requires explicitly setting the providers parameter if you want to use execution providers
   # other than the default CPU provider (as opposed to the previous behavior of providers getting set/registered by default
