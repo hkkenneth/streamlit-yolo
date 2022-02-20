@@ -17,7 +17,7 @@ from scipy import special
 
 onnx_model_url = 'https://github.com/onnx/models/blob/main/vision/object_detection_segmentation/yolov4/model/yolov4.onnx?raw=true'
 if not os.path.exists('yolov4.onnx'):
-  urllib.request.urlretrieve(onnx_model_url, filename='mnist-8.onnx')
+  urllib.request.urlretrieve(onnx_model_url, filename='yolov4.onnx')
   st.write('Model downloaded')
 
 if not os.path.exists('coco.names'):
