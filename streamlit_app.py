@@ -28,16 +28,17 @@ if not os.path.exists('yolov4_anchors.txt'):
   urllib.request.urlretrieve('https://github.com/onnx/models/raw/main/vision/object_detection_segmentation/yolov4/dependencies/yolov4_anchors.txt?raw=true', filename="yolov4_anchors.txt")
   st.write('yolov4_anchors.txt downloaded')
 
-# Start from ORT 1.10, ORT requires explicitly setting the providers parameter if you want to use execution providers
-# other than the default CPU provider (as opposed to the previous behavior of providers getting set/registered by default
-# based on the build flags) when instantiating InferenceSession.
-# For example, if NVIDIA GPU is available and ORT Python package is built with CUDA, then call API as following:
-# rt.InferenceSession(path/to/model, providers=['CUDAExecutionProvider'])
-sess = rt.InferenceSession('yolov4.onnx', None)
-outputs = sess.get_outputs()
-output_names = list(map(lambda output: output.name, outputs))
-input_name = sess.get_inputs()[0].name
-st.write('Model loaded')
+if os.path.exists('yolov4.onnx'):
+  # Start from ORT 1.10, ORT requires explicitly setting the providers parameter if you want to use execution providers
+  # other than the default CPU provider (as opposed to the previous behavior of providers getting set/registered by default
+  # based on the build flags) when instantiating InferenceSession.
+  # For example, if NVIDIA GPU is available and ORT Python package is built with CUDA, then call API as following:
+  # rt.InferenceSession(path/to/model, providers=['CUDAExecutionProvider'])
+  sess = rt.InferenceSession('yolov4.onnx', None)
+  outputs = sess.get_outputs()
+  output_names = list(map(lambda output: output.name, outputs))
+  input_name = sess.get_inputs()[0].name
+  st.write('Model loaded')
 
 def image_preprocess(image, target_size, gt_boxes=None):
 
@@ -231,31 +232,32 @@ def draw_bbox(image, bboxes, classes=read_class_names("coco.names"), show_label=
 # Testing only
 urllib.request.urlretrieve('https://github.com/hunglc007/tensorflow-yolov4-tflite/raw/master/data/kite.jpg?raw=true', filename="kite.jpg")
 
-input_size = 416
+if st.button('Predict'):
+  input_size = 416
 
-original_image = cv2.imread("kite.jpg")
-original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
-original_image_size = original_image.shape[:2]
+  original_image = cv2.imread("kite.jpg")
+  original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
+  original_image_size = original_image.shape[:2]
 
-image_data = image_preprocess(np.copy(original_image), [input_size, input_size])
-image_data = image_data[np.newaxis, ...].astype(np.float32)
+  image_data = image_preprocess(np.copy(original_image), [input_size, input_size])
+  image_data = image_data[np.newaxis, ...].astype(np.float32)
 
-st.write("Preprocessed image shape:",image_data.shape) # shape of the preprocessed input
+  st.write("Preprocessed image shape:",image_data.shape) # shape of the preprocessed input
 
-detections = sess.run(output_names, {input_name: image_data})
-st.write("Output shape:", list(map(lambda detection: detection.shape, detections)))
+  detections = sess.run(output_names, {input_name: image_data})
+  st.write("Output shape:", list(map(lambda detection: detection.shape, detections)))
 
-ANCHORS = "yolov4_anchors.txt"
-STRIDES = [8, 16, 32]
-XYSCALE = [1.2, 1.1, 1.05]
+  ANCHORS = "yolov4_anchors.txt"
+  STRIDES = [8, 16, 32]
+  XYSCALE = [1.2, 1.1, 1.05]
 
-ANCHORS = get_anchors(ANCHORS)
-STRIDES = np.array(STRIDES)
+  ANCHORS = get_anchors(ANCHORS)
+  STRIDES = np.array(STRIDES)
 
-pred_bbox = postprocess_bbbox(detections, ANCHORS, STRIDES, XYSCALE)
-bboxes = postprocess_boxes(pred_bbox, original_image_size, input_size, 0.25)
-bboxes = nms(bboxes, 0.213, method='nms')
-image = draw_bbox(original_image, bboxes)
+  pred_bbox = postprocess_bbbox(detections, ANCHORS, STRIDES, XYSCALE)
+  bboxes = postprocess_boxes(pred_bbox, original_image_size, input_size, 0.25)
+  bboxes = nms(bboxes, 0.213, method='nms')
+  image = draw_bbox(original_image, bboxes)
 
-image = Image.fromarray(image)
-st.image(image)
+  image = Image.fromarray(image)
+  st.image(image)
