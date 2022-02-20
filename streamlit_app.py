@@ -28,17 +28,16 @@ if not os.path.exists('yolov4_anchors.txt'):
   urllib.request.urlretrieve('https://github.com/onnx/models/raw/main/vision/object_detection_segmentation/yolov4/dependencies/yolov4_anchors.txt?raw=true', filename="yolov4_anchors.txt")
   st.write('yolov4_anchors.txt downloaded')
 
-if os.path.exists('yolov4.onnx'):
-  # Start from ORT 1.10, ORT requires explicitly setting the providers parameter if you want to use execution providers
-  # other than the default CPU provider (as opposed to the previous behavior of providers getting set/registered by default
-  # based on the build flags) when instantiating InferenceSession.
-  # For example, if NVIDIA GPU is available and ORT Python package is built with CUDA, then call API as following:
-  # rt.InferenceSession(path/to/model, providers=['CUDAExecutionProvider'])
-  sess = rt.InferenceSession('yolov4.onnx', None)
-  outputs = sess.get_outputs()
-  output_names = list(map(lambda output: output.name, outputs))
-  input_name = sess.get_inputs()[0].name
-  st.write('Model loaded')
+# Start from ORT 1.10, ORT requires explicitly setting the providers parameter if you want to use execution providers
+# other than the default CPU provider (as opposed to the previous behavior of providers getting set/registered by default
+# based on the build flags) when instantiating InferenceSession.
+# For example, if NVIDIA GPU is available and ORT Python package is built with CUDA, then call API as following:
+# rt.InferenceSession(path/to/model, providers=['CUDAExecutionProvider'])
+sess = rt.InferenceSession('yolov4.onnx', None)
+outputs = sess.get_outputs()
+output_names = list(map(lambda output: output.name, outputs))
+input_name = sess.get_inputs()[0].name
+st.write('Model loaded')
 
 def image_preprocess(image, target_size, gt_boxes=None):
 
