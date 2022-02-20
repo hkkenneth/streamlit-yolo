@@ -238,7 +238,8 @@ upload_file = st.file_uploader(label='Predict uploaded image file')
 if upload_file is not None:
   # To read file as bytes:
   bytes_data = upload_file.getvalue()
-  original_image = cv2.imdecode(np.frombuffer(io.BytesIO(bytes_data), np.uint8), 1)
+  # Ref: https://stackoverflow.com/a/54162776
+  original_image = cv2.imdecode(np.frombuffer(io.BytesIO(bytes_data).read(), np.uint8), 1)
   original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
   original_image_size = original_image.shape[:2]
 
