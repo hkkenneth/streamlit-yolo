@@ -233,13 +233,16 @@ def draw_bbox(image, bboxes, classes=read_class_names("coco.names"), show_label=
 # Testing only
 urllib.request.urlretrieve('https://github.com/hunglc007/tensorflow-yolov4-tflite/raw/master/data/kite.jpg?raw=true', filename="kite.jpg")
 
-if st.button('Predict'):
-  input_size = 416
+upload_file = col2.file_uploader(label='Predict uploaded image file')
 
-  original_image = cv2.imread("kite.jpg")
+if upload_file is not None:
+  # To read file as bytes:
+  bytes_data = upload_file.getvalue()
+  original_image = cv2.imdecode(np.frombuffer(io.BytesIO(bytes_data), np.uint8), 1)
   original_image = cv2.cvtColor(original_image, cv2.COLOR_BGR2RGB)
   original_image_size = original_image.shape[:2]
 
+  input_size = 416
   image_data = image_preprocess(np.copy(original_image), [input_size, input_size])
   image_data = image_data[np.newaxis, ...].astype(np.float32)
 
