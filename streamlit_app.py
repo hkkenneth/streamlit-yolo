@@ -233,7 +233,7 @@ def draw_bbox(image, bboxes, classes=read_class_names("coco.names"), show_label=
 # Testing only
 urllib.request.urlretrieve('https://github.com/hunglc007/tensorflow-yolov4-tflite/raw/master/data/kite.jpg?raw=true', filename="kite.jpg")
 
-upload_file = col2.file_uploader(label='Predict uploaded image file')
+upload_file = st.file_uploader(label='Predict uploaded image file')
 
 if upload_file is not None:
   # To read file as bytes:
