@@ -266,3 +266,9 @@ if upload_file is not None:
 
   image = Image.fromarray(image)
   st.image(image)
+  st.write('detections')
+  st.write(detections)
+  st.write('pred_bbox')
+  st.write(pred_bbox)
+  st.write('post-nms bboxes')
+  st.write(bboxes)
